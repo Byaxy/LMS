@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 import Footer from "@/components/Footer/Footer";
 import { Features, Courses, CourseBanner, HeritageBanner } from "@/components";
@@ -9,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/student/Header";
 
 export default function StudentLayout({ children }) {
-  const { user } = useAuth();
+  const { user, api } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasEnrollments, setHasEnrollments] = useState(false);
@@ -18,7 +17,8 @@ export default function StudentLayout({ children }) {
     const fetchEnrollments = async () => {
       if (user && user.id) {
         try {
-          const response = await axios.get(
+          // Use the authenticated api instance from AuthContext instead of axios
+          const response = await api.get(
             `/api/enrollments/user/${user.id}/courses`
           );
           setEnrollments(response.data.data);
@@ -36,7 +36,7 @@ export default function StudentLayout({ children }) {
     };
 
     fetchEnrollments();
-  }, [user]);
+  }, [user, api]);
 
   if (loading) {
     return (
@@ -69,6 +69,7 @@ export default function StudentLayout({ children }) {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 }
